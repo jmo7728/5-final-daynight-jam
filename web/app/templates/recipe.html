@@ -116,12 +116,20 @@
       {% endif %}
 
       {% if recipe.substitutions %}
-        <h3 class="section-title">Substitutions</h3>
-        <ul>
+      <h3 class="section-title">Substitutions</h3>
+      <ul>
+        {# Case 1: substitutions is a dict, e.g. {"milk": "oat milk"} #}
+        {% if recipe.substitutions is mapping %}
           {% for key, value in recipe.substitutions.items() %}
-            <li>{{ key }} → {{ value }}</li>
-          {% endfor %}
-        </ul>
+        <li>{{ key }} → {{ value }}</li>
+        {% endfor %}
+        {# Case 2: substitutions is a list of strings, like from the ML client #}
+        {% else %}
+        {% for sub in recipe.substitutions %}
+        <li>{{ sub }}</li>
+        {% endfor %}
+        {% endif %}
+      </ul>
       {% endif %}
     </div>
   {% else %}
