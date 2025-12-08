@@ -1,2 +1,192 @@
-<h1>Recipe Page</h1>
-<a href="{{ url_for('main.home') }}">Home</a>
+ <!-- PLACE HOLDER-->
+ {% extends "base.html" %}
+
+{% block title %}Recipe Results · Recipe Jam{% endblock %}
+
+{% block extra_css %}
+<style>
+  .recipe-container {
+    margin-top: 2rem;
+  }
+
+  .recipe-card {
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  }
+
+  .recipe-card h2 {
+    margin-top: 0;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid #ddd;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.25rem;
+    background: #f8f9fa;
+  }
+
+  .section-title {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .back-link {
+    margin-top: 1.5rem;
+    display: inline-block;
+    font-size: 0.9rem;
+  }
+
+  .primary-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+
+  .primary-btn:hover {
+    opacity: 0.9;
+  }
+
+  .status-text {
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .error-text {
+    color: #b00020;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>🍲 Recipe Results</h1>
+<p id="ingredients-summary" class="status-text"></p>
+
+<div class="recipe-container">
+  <div id="recipe-results">
+    <p class="status-text">Loading recipes...</p>
+  </div>
+
+  <a href="{{ url_for('main.ingredients') }}" class="back-link">← Back to My Ingredients</a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+  const resultsContainer = document.getElementById("recipe-results");
+  const summary = document.getElementById("ingredients-summary");
+
+  // 1. Read ingredients from localStorage
+  const stored = localStorage.getItem("selectedIngredients");
+  let ingredients = [];
+  if (stored) {
+    try {
+      ingredients = JSON.parse(stored);
+    } catch (e) {
+      console.error("Error parsing stored ingredients:", e);
+    }
+  }
+
+  if (!ingredients || ingredients.length === 0) {
+    summary.textContent = "No ingredients selected. Go back and add some first.";
+    resultsContainer.innerHTML = `
+      <p class="status-text">You haven't selected any ingredients yet.</p>
+    `;
+    return;
+  }
+
+  summary.textContent = "Using ingredients: " + ingredients.join(", ");
+
+  // 2. Build payload for /api/recommend
+  const payload = {
+    include: ingredients,
+    exclude: [],
+    cuisine: "any",
+    taste: "balanced",
+    diet: "none"
+  };
+
+  try {
+    // 3. Call your Flask API (which calls the ML client)
+    const res = await fetch("/api/recommend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error("HTTP " + res.status + " – " + text);
+    }
+
+    const data = await res.json();
+
+    const r = data.recipe;
+    if (!r) {
+      resultsContainer.innerHTML = `
+        <p class="status-text error-text">No recipe returned from server.</p>
+      `;
+      return;
+    }
+
+    // 4. Render recipe card
+    resultsContainer.innerHTML = "";  // clear "Loading..." text
+
+    const card = document.createElement("div");
+    card.className = "recipe-card";
+
+    const ingredientsList = Array.isArray(r.ingredients)
+      ? `<ul>${r.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>`
+      : "<p>(No ingredients list provided)</p>";
+
+    const stepsList = Array.isArray(r.steps)
+      ? `<ol>${r.steps.map(step => `<li>${step}</li>`).join("")}</ol>`
+      : "<p>(No steps provided)</p>";
+
+    card.innerHTML = `
+      <h2>${r.name || "Recipe suggestion"}</h2>
+
+      <div style="margin-bottom: 1rem;">
+        ${payload.cuisine !== "any" ? `<span class="pill">Cuisine: ${payload.cuisine}</span>` : ""}
+        ${payload.taste !== "balanced" ? `<span class="pill">Taste: ${payload.taste}</span>` : ""}
+        ${payload.diet !== "none" ? `<span class="pill">Diet: ${payload.diet}</span>` : ""}
+      </div>
+
+      <h3 class="section-title">Ingredients</h3>
+      ${ingredientsList}
+
+      <h3 class="section-title">Steps</h3>
+      ${stepsList}
+
+      <button class="primary-btn"
+        onclick="window.location='/result?recipe_id=${r._id}'">
+        View saved recipe page
+      </button>
+    `;
+
+    resultsContainer.appendChild(card);
+
+  } catch (err) {
+    console.error("Error from /api/recommend:", err);
+    resultsContainer.innerHTML = `
+      <p class="status-text error-text">
+        There was an error fetching recipes.
+      </p>
+      <p class="status-text">${err.message || ""}</p>
+    `;
+  }
+});
+</script>
+{% endblock %}

@@ -1,21 +1,18 @@
+import os
 from flask import Blueprint, request, jsonify, session, current_app
 from .ml_client import get_recommendation, replace_ingredient
 from .db import insert_recipe, find_recipe_by_id
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
-
 @api_bp.route("/recommend", methods=["POST"])
 def api_recommend():
     payload = request.json or {}
     # store user query (optional)
     # call ML client (placeholder)
-    result = get_recommendation(payload)
-    # store first recipe to DB for subsequent replace tests
-    first = result.get("best_recipes", [])[0]
-    if first:
-        rid = insert_recipe(first)
-        first["_id"] = str(rid)
-    return jsonify(result)
+    recipe = get_recommendation(payload)
+    rid = insert_recipe(recipe)
+    recipe["_id"] = str(rid)
+    return jsonify({"recipe":recipe})
 
 @api_bp.route("/replace", methods=["POST"])
 def api_replace():
