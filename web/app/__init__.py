@@ -1,24 +1,20 @@
 from flask import Flask
-from .db import init_db_client
 from .auth import auth_bp, bcrypt, login_manager
 from .api import api_bp
 from .pages import pages_bp
 
 def create_app():
     app = Flask(__name__, static_folder="static", template_folder="templates")
-    app.config["SECRET_KEY"] = "dev-secret-key"  # TODO: switch to .env
+    app.config["SECRET_KEY"] = "dev-secret-key"  # TODO: move to .env later
 
-    # 1. Initialize DB client
-    init_db_client(app)
-
-    # 2. Initialize auth-related extensions
+    # Initialize extensions
     bcrypt.init_app(app)
     login_manager.init_app(app)
 
-    # 3. Register blueprints
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(api_bp)
-    app.register_blueprint(pages_bp)
+    # Register blueprints
+    app.register_blueprint(auth_bp)   # /auth/login, /auth/register, /auth/logout
+    app.register_blueprint(api_bp)    # /api/...
+    app.register_blueprint(pages_bp)  # "/", "/recipe", etc.
 
     return app
 

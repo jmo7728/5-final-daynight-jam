@@ -1,5 +1,5 @@
 import os
-import pymongo
+from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 
 # In-memory fallback stores
@@ -12,12 +12,17 @@ mongo_client = None
 db = None
 USE_MONGO = False
 
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+client = MongoClient(MONGO_URI)
+db = client["food_recommendation"]
+users_collection = db["users"]
+
 def init_db_client(app=None):
     global mongo_client, db, USE_MONGO
     mongo_uri = os.getenv("MONGO_URI")
     if mongo_uri:
         try:
-            mongo_client = pymongo.MongoClient(mongo_uri, serverSelectionTimeoutMS=3000)
+            mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=3000)
             # trigger server selection
             mongo_client.server_info()
             db = mongo_client.get_database()  # default from URI

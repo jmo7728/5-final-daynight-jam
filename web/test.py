@@ -1,10 +1,10 @@
 from app.ml_client import get_recommendation
 
 payload = {
-    "include": ["egg", "milk", "butter"],
-    "cuisine": "italian",
+    "include": ["tomatoes", "onions"],
+    "cuisine": "",
     "allergies": [],
-    "taste": ["savory"],
+    "taste": [""],
 }
 
 result = get_recommendation(payload)
