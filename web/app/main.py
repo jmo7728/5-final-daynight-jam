@@ -1,49 +1,51 @@
-from flask import Blueprint, render_template, request, session, redirect, url_for
-from .db import insert_recipe
+from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required
 
 main_bp = Blueprint("main", __name__)
 
-def login_required(f):
-    """Simple session-based login check"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if "user" not in session:
-            return redirect(url_for("auth.login"))
-        return f(*args, **kwargs)
-    return decorated_function
-
 @main_bp.route("/")
 @login_required
-def index():
-    """Home page"""
+def home():
+    """Main landing page after login."""
     return render_template("home.html")
 
 @main_bp.route("/home")
 @login_required
-def home():
-    """Home page with project overview"""
-    return render_template("home.html")
+def home_redirect():
+    """Optional /home route that just redirects to /."""
+    return redirect(url_for("main.home"))
 
 @main_bp.route("/ingredients")
 @login_required
 def ingredients():
-    """Page to manage user's available ingredients"""
+    """Page where the user manages / enters their ingredients."""
     return render_template("ingredients.html")
 
 @main_bp.route("/recipe")
 @login_required
 def recipe():
-    """Recipe listing and detail page"""
+    """Recipe results page (for now just renders template)."""
     return render_template("recipe.html")
 
 @main_bp.route("/result")
 @login_required
 def result_page():
-    """Result page - expects query string with recipe_id"""
+    """
+    Result page – expects ?recipe_id=<id> in the query string.
+    If DB helpers are not implemented yet, this will just render
+    the template with recipe=None.
+    """
     recipe_id = request.args.get("recipe_id")
     recipe = None
+
     if recipe_id:
-        from .db import find_recipe_by_id
-        recipe = find_recipe_by_id(recipe_id)
+        try:
+            # If you later implement find_recipe_by_id in db.py,
+            # this will start working without changing this route.
+            from .db import find_recipe_by_id
+            recipe = find_recipe_by_id(recipe_id)
+        except ImportError:
+            # DB helpers not implemented yet
+            recipe = None
+
     return render_template("result.html", recipe=recipe)
