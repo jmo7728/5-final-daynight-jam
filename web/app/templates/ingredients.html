@@ -177,9 +177,21 @@
     </div>
 </div>
 
-<button class="find-recipes-btn" id="find-recipes-btn" onclick="findRecipes()" disabled>
+<form id="ingredients-form"
+      action="{{ url_for('pages.recipe') }}"
+      method="post">
+
+  <input type="hidden" name="ingredients" id="ingredients-hidden">
+
+  <button class="find-recipes-btn"
+          id="find-recipes-btn"
+          type="button"
+          onclick="findRecipes()"
+          disabled>
     Find Recipes with These Ingredients
-</button>
+  </button>
+</form>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -238,9 +250,9 @@
   }
 
   function findRecipes() {
-    // Store ingredients in localStorage for the recipe page to use
-    localStorage.setItem('selectedIngredients', JSON.stringify(ingredients));
-    window.location.href = "{{ url_for('main.recipe') }}";
+    document.getElementById("ingredients-hidden").value = ingredients.join(", ");
+    document.getElementById("ingredients-form").submit();
   }
+
 </script>
 {% endblock %}
