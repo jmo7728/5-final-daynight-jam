@@ -43,22 +43,40 @@ def recipe():
     # POST: handle form submission from ingredients.html
     if request.method == "POST":
         raw_ingredients = request.form.get("ingredients", "")
+        raw_tools = request.form.get("tools", "")
+        raw_exclude = request.form.get("exclude", "")
+        
         include = _parse_csv(raw_ingredients)
+        tools = _parse_csv(raw_tools)
+        exclude = _parse_csv(raw_exclude)
 
         if not include:
             flash("Please enter at least one ingredient.", "error")
             return redirect(url_for("pages.ingredients"))
 
-        # Build payload for the ML client; you can extend this later with
-        # cuisine, allergies, taste, etc.
+        # Build payload for the ML client
         payload = {
             "include": include,
+            "exclude": exclude,
+            "tools": tools,
         }
 
-        # Call your ML client (works in test.py, we reuse the same function)
-        result = get_recommendation(payload) or {}
+        # Call ML client
+        try:
+            result = get_recommendation(payload) or {}
+        except Exception as e:
+            # Handle ML client errors
+            flash(f"Could not get recommendation: {str(e)}", "error")
+            return render_template(
+                "recipe.html",
+                include=include,
+                tools=tools,
+                exclude=exclude,
+                recipe=None,
+                other_suggestions=[],
+            )
 
-        # Support two possible shapes of result:
+        # Two possible shapes of result:
         # 1) A dict with "best_recipes" and "other_suggestions"
         # 2) A single recipe dict
         recipe_obj = None
@@ -69,12 +87,14 @@ def recipe():
             recipe_obj = best_recipes[0] if best_recipes else None
             other_suggestions = result.get("other_suggestions") or []
         else:
-            # Assume it's already a single recipe dict
+            # Assume it's  a single recipe dict
             recipe_obj = result or None
 
         return render_template(
             "recipe.html",
             include=include,
+            tools=tools,
+            exclude=exclude,
             recipe=recipe_obj,
             other_suggestions=other_suggestions,
         )
@@ -83,6 +103,8 @@ def recipe():
     return render_template(
         "recipe.html",
         include=[],
+        tools=[],
+        exclude=[],
         recipe=None,
         other_suggestions=[],
     )

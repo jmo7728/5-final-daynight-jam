@@ -4,43 +4,136 @@
 
 {% block extra_css %}
 <style>
-    .ingredient-input-section {
+    .input-section {
         margin-bottom: 2rem;
         padding: 1.5rem;
         background: #f8f9fa;
-        border-radius: 8px;
+        border-radius: 12px;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-icon {
+        font-size: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .section-subtitle {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.25rem;
+    }
+
+    .input-wrapper {
+        position: relative;
     }
 
     .input-group {
         display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
+        gap: 0.75rem;
     }
 
         .input-group input {
             flex: 1;
-            padding: 0.75rem;
+            padding: 0.875rem 1rem;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
+            transition: all 0.3s;
         }
 
+            .input-group input:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
         .input-group button {
-            padding: 0.75rem 1.5rem;
-            background: #667eea;
+            padding: 0.875rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-weight: bold;
+            border-radius: 10px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            white-space: nowrap;
         }
 
             .input-group button:hover {
-                background: #764ba2;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             }
 
-    .quick-add {
+    /* Autocomplete dropdown */
+    .autocomplete-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 80px;
+        background: white;
+        border: 2px solid #667eea;
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: none;
+    }
+
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+
+    .autocomplete-item {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        }
+
+        .autocomplete-item .highlight {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .autocomplete-item .category {
+            font-size: 0.75rem;
+            color: #999;
+            margin-left: auto;
+        }
+
+    /* Quick add buttons */
+    .quick-add-section {
+        margin-top: 1rem;
+    }
+
+    .quick-add-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+
+    .quick-add-grid {
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
@@ -49,210 +142,795 @@
     .quick-add-btn {
         padding: 0.5rem 1rem;
         background: white;
-        border: 2px solid #667eea;
+        border: 2px solid #667eea30;
         color: #667eea;
-        border-radius: 20px;
+        border-radius: 25px;
         cursor: pointer;
         font-size: 0.9rem;
         transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
     }
 
         .quick-add-btn:hover {
             background: #667eea;
             color: white;
+            border-color: #667eea;
+            transform: scale(1.05);
         }
 
-    .ingredients-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1rem;
-        margin-top: 1.5rem;
+        .quick-add-btn.tools {
+            border-color: #4caf5030;
+            color: #4caf50;
+        }
+
+            .quick-add-btn.tools:hover {
+                background: #4caf50;
+                color: white;
+                border-color: #4caf50;
+            }
+
+        .quick-add-btn.exclude {
+            border-color: #ff444430;
+            color: #ff4444;
+        }
+
+            .quick-add-btn.exclude:hover {
+                background: #ff4444;
+                color: white;
+                border-color: #ff4444;
+            }
+
+    /* Tags display */
+    .tags-container {
+        margin-top: 1rem;
     }
 
-    .ingredient-tag {
-        padding: 1rem;
-        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-        border-radius: 8px;
+    .tags-grid {
         display: flex;
-        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .tag {
+        padding: 0.75rem 1rem;
+        border-radius: 25px;
+        display: flex;
         align-items: center;
-        border: 2px solid #667eea20;
-    }
-
-    .ingredient-name {
+        gap: 0.5rem;
         font-weight: 500;
-        color: #333;
+        animation: tagPop 0.3s ease-out;
     }
 
-    .remove-btn {
-        background: #ff4444;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        cursor: pointer;
-        font-size: 1rem;
-        line-height: 1;
-        transition: background 0.3s;
-    }
-
-        .remove-btn:hover {
-            background: #cc0000;
+    @keyframes tagPop {
+        0% {
+            transform: scale(0.8);
+            opacity: 0;
         }
 
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .tag.ingredient {
+        background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+        border: 2px solid #667eea40;
+        color: #5a67d8;
+    }
+
+    .tag.tool {
+        background: linear-gradient(135deg, #4caf5020 0%, #45a04920 100%);
+        border: 2px solid #4caf5040;
+        color: #388e3c;
+    }
+
+    .tag.exclude {
+        background: linear-gradient(135deg, #ff444420 0%, #e5393520 100%);
+        border: 2px solid #ff444440;
+        color: #d32f2f;
+        text-decoration: line-through;
+    }
+
+    .tag .remove-btn {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: all 0.2s;
+        padding: 0;
+        line-height: 1;
+    }
+
+        .tag .remove-btn:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+    .tag.ingredient .remove-btn {
+        color: #667eea;
+    }
+
+    .tag.tool .remove-btn {
+        color: #4caf50;
+    }
+
+    .tag.exclude .remove-btn {
+        color: #ff4444;
+    }
+
+    /* Empty state */
     .empty-state {
         text-align: center;
-        padding: 3rem;
-        color: #666;
+        padding: 2rem;
+        color: #999;
     }
 
     .empty-state-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.5;
+    }
+
+    /* Summary panel */
+    .summary-panel {
+        background: white;
+        border: 2px solid #667eea20;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-item {
+        text-align: center;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .summary-count {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    .summary-label {
+        font-size: 0.85rem;
+        color: #666;
     }
 
     .find-recipes-btn {
         display: block;
         width: 100%;
-        padding: 1rem;
+        padding: 1.25rem;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 8px;
+        border-radius: 12px;
         font-size: 1.1rem;
-        font-weight: bold;
+        font-weight: 700;
         cursor: pointer;
-        margin-top: 2rem;
-        transition: transform 0.3s;
+        transition: all 0.3s;
     }
 
-        .find-recipes-btn:hover {
-            transform: translateY(-2px);
+        .find-recipes-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
         .find-recipes-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
-            transform: none;
         }
+
+    @media (max-width: 768px) {
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<h1>🥬 My Ingredients</h1>
-<p style="color: #666; margin-bottom: 2rem;">Add ingredients you have available to find matching recipes</p>
+<h1>🥬 My Kitchen</h1>
+<p style="color: #666; margin-bottom: 2rem;">Tell us what you have (and don't have) to find perfect recipes</p>
 
-<div class="ingredient-input-section">
-    <h2 style="font-size: 1.2rem; margin-bottom: 1rem;">Add Ingredient</h2>
-    <div class="input-group">
-        <input type="text"
-               id="ingredient-input"
-               placeholder="e.g., chicken, tomatoes, garlic..."
-               onkeypress="if(event.key === 'Enter') addIngredient()" />
-        <button onclick="addIngredient()">Add</button>
+<!-- Ingredients Section -->
+<div class="input-section">
+    <div class="section-header">
+        <span class="section-icon">🥗</span>
+        <div>
+            <h2 class="section-title">Ingredients I Have</h2>
+            <p class="section-subtitle">Add ingredients available in your kitchen</p>
+        </div>
     </div>
 
-    <div style="margin-top: 1rem;">
-        <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">Quick add:</p>
-        <div class="quick-add">
-            <button class="quick-add-btn" onclick="quickAdd('Chicken')">🍗 Chicken</button>
-            <button class="quick-add-btn" onclick="quickAdd('Eggs')">🥚 Eggs</button>
-            <button class="quick-add-btn" onclick="quickAdd('Tomatoes')">🍅 Tomatoes</button>
-            <button class="quick-add-btn" onclick="quickAdd('Onions')">🧅 Onions</button>
-            <button class="quick-add-btn" onclick="quickAdd('Garlic')">🧄 Garlic</button>
-            <button class="quick-add-btn" onclick="quickAdd('Rice')">🍚 Rice</button>
-            <button class="quick-add-btn" onclick="quickAdd('Pasta')">🍝 Pasta</button>
-            <button class="quick-add-btn" onclick="quickAdd('Cheese')">🧀 Cheese</button>
+    <div class="input-wrapper">
+        <div class="input-group">
+            <input type="text"
+                   id="ingredient-input"
+                   placeholder="Start typing... e.g., toma → tomatoes"
+                   autocomplete="off" />
+            <button onclick="addIngredient()">+ Add</button>
+        </div>
+        <div id="ingredient-autocomplete" class="autocomplete-dropdown"></div>
+    </div>
+
+    <div class="quick-add-section">
+        <p class="quick-add-label">Quick add popular ingredients:</p>
+        <div class="quick-add-grid">
+            <button class="quick-add-btn" onclick="quickAddIngredient('Chicken')">🍗 Chicken</button>
+            <button class="quick-add-btn" onclick="quickAddIngredient('Eggs')">🥚 Eggs</button>
+            <button class="quick-add-btn" onclick="quickAddIngredient('Tomatoes')">🍅 Tomatoes</button>
+            <button class="quick-add-btn" onclick="quickAddIngredient('Onions')">🧅 Onions</button>
+            <button class="quick-add-btn" onclick="quickAddIngredient('Garlic')">🧄 Garlic</button>
+            <button class="quick-add-btn" onclick="quickAddIngredient('Rice')">🍚 Rice</button>
+            <button class="quick-add-btn" onclick="quickAddIngredient('Pasta')">🍝 Pasta</button>
+            <button class="quick-add-btn" onclick="quickAddIngredient('Cheese')">🧀 Cheese</button>
+            <button class="quick-add-btn" onclick="quickAddIngredient('Beef')">🥩 Beef</button>
+            <button class="quick-add-btn" onclick="quickAddIngredient('Milk')">🥛 Milk</button>
+        </div>
+    </div>
+
+    <div class="tags-container" id="ingredients-container">
+        <div class="empty-state">
+            <div class="empty-state-icon">🍽️</div>
+            <p>No ingredients added yet</p>
         </div>
     </div>
 </div>
 
-<h2>Your Ingredients</h2>
-<div id="ingredients-container">
-    <div class="empty-state">
-        <div class="empty-state-icon">🍽️</div>
-        <p>No ingredients added yet</p>
-        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Start adding ingredients to find recipes!</p>
+<!-- Tools Section -->
+<div class="input-section">
+    <div class="section-header">
+        <span class="section-icon">🍳</span>
+        <div>
+            <h2 class="section-title">Kitchen Tools Available</h2>
+            <p class="section-subtitle">What cookware do you have? (optional)</p>
+        </div>
+    </div>
+
+    <div class="input-wrapper">
+        <div class="input-group">
+            <input type="text"
+                   id="tool-input"
+                   placeholder="e.g., oven, blender, air fryer..."
+                   autocomplete="off" />
+            <button onclick="addTool()" style="background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);">+ Add</button>
+        </div>
+        <div id="tool-autocomplete" class="autocomplete-dropdown"></div>
+    </div>
+
+    <div class="quick-add-section">
+        <p class="quick-add-label">Common kitchen tools:</p>
+        <div class="quick-add-grid">
+            <button class="quick-add-btn tools" onclick="quickAddTool('Oven')">🔥 Oven</button>
+            <button class="quick-add-btn tools" onclick="quickAddTool('Stovetop')">♨️ Stovetop</button>
+            <button class="quick-add-btn tools" onclick="quickAddTool('Microwave')">📡 Microwave</button>
+            <button class="quick-add-btn tools" onclick="quickAddTool('Blender')">🫗 Blender</button>
+            <button class="quick-add-btn tools" onclick="quickAddTool('Air Fryer')">🌀 Air Fryer</button>
+            <button class="quick-add-btn tools" onclick="quickAddTool('Instant Pot')">🍲 Instant Pot</button>
+            <button class="quick-add-btn tools" onclick="quickAddTool('Grill')">🍖 Grill</button>
+            <button class="quick-add-btn tools" onclick="quickAddTool('Wok')">🥘 Wok</button>
+        </div>
+    </div>
+
+    <div class="tags-container" id="tools-container">
+        <div class="empty-state">
+            <div class="empty-state-icon">🔧</div>
+            <p>No tools specified (we'll suggest any recipe)</p>
+        </div>
     </div>
 </div>
 
-<form id="ingredients-form"
-      action="{{ url_for('pages.recipe') }}"
-      method="post">
+<!-- Exclude Section -->
+<div class="input-section" style="background: #fff5f5;">
+    <div class="section-header">
+        <span class="section-icon">🚫</span>
+        <div>
+            <h2 class="section-title">Ingredients to Avoid</h2>
+            <p class="section-subtitle">Allergies, dislikes, or ingredients you don't have</p>
+        </div>
+    </div>
 
-  <input type="hidden" name="ingredients" id="ingredients-hidden">
+    <div class="input-wrapper">
+        <div class="input-group">
+            <input type="text"
+                   id="exclude-input"
+                   placeholder="e.g., nuts, shellfish, dairy..."
+                   autocomplete="off" />
+            <button onclick="addExclude()" style="background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);">+ Exclude</button>
+        </div>
+        <div id="exclude-autocomplete" class="autocomplete-dropdown"></div>
+    </div>
 
-  <button class="find-recipes-btn"
-          id="find-recipes-btn"
-          type="button"
-          onclick="findRecipes()"
-          disabled>
-    Find Recipes with These Ingredients
-  </button>
-</form>
+    <div class="quick-add-section">
+        <p class="quick-add-label">Common allergens & restrictions:</p>
+        <div class="quick-add-grid">
+            <button class="quick-add-btn exclude" onclick="quickAddExclude('Nuts')">🥜 Nuts</button>
+            <button class="quick-add-btn exclude" onclick="quickAddExclude('Dairy')">🧈 Dairy</button>
+            <button class="quick-add-btn exclude" onclick="quickAddExclude('Gluten')">🌾 Gluten</button>
+            <button class="quick-add-btn exclude" onclick="quickAddExclude('Shellfish')">🦐 Shellfish</button>
+            <button class="quick-add-btn exclude" onclick="quickAddExclude('Eggs')">🥚 Eggs</button>
+            <button class="quick-add-btn exclude" onclick="quickAddExclude('Soy')">🫘 Soy</button>
+            <button class="quick-add-btn exclude" onclick="quickAddExclude('Pork')">🐷 Pork</button>
+            <button class="quick-add-btn exclude" onclick="quickAddExclude('Spicy')">🌶️ Spicy</button>
+        </div>
+    </div>
+
+    <div class="tags-container" id="exclude-container">
+        <div class="empty-state">
+            <div class="empty-state-icon">✓</div>
+            <p>No restrictions - all ingredients welcome!</p>
+        </div>
+    </div>
+</div>
+
+<!-- Summary & Submit -->
+<div class="summary-panel">
+    <div class="summary-grid">
+        <div class="summary-item">
+            <div class="summary-count" id="ingredient-count">0</div>
+            <div class="summary-label">Ingredients</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-count" id="tool-count" style="color: #4caf50;">0</div>
+            <div class="summary-label">Tools</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-count" id="exclude-count" style="color: #ff4444;">0</div>
+            <div class="summary-label">Excluded</div>
+        </div>
+    </div>
+
+    <form id="kitchen-form" action="{{ url_for('pages.recipe') }}" method="post">
+        <input type="hidden" name="ingredients" id="ingredients-hidden">
+        <input type="hidden" name="tools" id="tools-hidden">
+        <input type="hidden" name="exclude" id="exclude-hidden">
+
+        <button class="find-recipes-btn" type="submit" id="find-recipes-btn" disabled>
+            🔍 Find Matching Recipes
+        </button>
+    </form>
+</div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-  let ingredients = [];
+    // Data stores
+    let ingredients = [];
+    let tools = [];
+    let excludeList = [];
+    let selectedIndex = -1;
 
-  function addIngredient() {
-    const input = document.getElementById('ingredient-input');
-    const ingredient = input.value.trim();
+    // Comprehensive ingredient database with categories
+    const ingredientDatabase = [
+        // Proteins
+        { name: "Chicken", category: "Protein", emoji: "🍗" },
+        { name: "Chicken Breast", category: "Protein", emoji: "🍗" },
+        { name: "Chicken Thighs", category: "Protein", emoji: "🍗" },
+        { name: "Ground Chicken", category: "Protein", emoji: "🍗" },
+        { name: "Beef", category: "Protein", emoji: "🥩" },
+        { name: "Ground Beef", category: "Protein", emoji: "🥩" },
+        { name: "Steak", category: "Protein", emoji: "🥩" },
+        { name: "Pork", category: "Protein", emoji: "🥓" },
+        { name: "Bacon", category: "Protein", emoji: "🥓" },
+        { name: "Ham", category: "Protein", emoji: "🍖" },
+        { name: "Sausage", category: "Protein", emoji: "🌭" },
+        { name: "Fish", category: "Protein", emoji: "🐟" },
+        { name: "Salmon", category: "Protein", emoji: "🐟" },
+        { name: "Tuna", category: "Protein", emoji: "🐟" },
+        { name: "Shrimp", category: "Protein", emoji: "🦐" },
+        { name: "Tofu", category: "Protein", emoji: "🧊" },
+        { name: "Eggs", category: "Protein", emoji: "🥚" },
+        { name: "Turkey", category: "Protein", emoji: "🦃" },
+        { name: "Lamb", category: "Protein", emoji: "🐑" },
 
-    if (ingredient && !ingredients.includes(ingredient)) {
-      ingredients.push(ingredient);
-      input.value = '';
-      renderIngredients();
+        // Vegetables
+        { name: "Tomatoes", category: "Vegetable", emoji: "🍅" },
+        { name: "Tomato Paste", category: "Vegetable", emoji: "🍅" },
+        { name: "Cherry Tomatoes", category: "Vegetable", emoji: "🍅" },
+        { name: "Onions", category: "Vegetable", emoji: "🧅" },
+        { name: "Red Onion", category: "Vegetable", emoji: "🧅" },
+        { name: "Green Onions", category: "Vegetable", emoji: "🧅" },
+        { name: "Garlic", category: "Vegetable", emoji: "🧄" },
+        { name: "Potatoes", category: "Vegetable", emoji: "🥔" },
+        { name: "Sweet Potatoes", category: "Vegetable", emoji: "🍠" },
+        { name: "Carrots", category: "Vegetable", emoji: "🥕" },
+        { name: "Broccoli", category: "Vegetable", emoji: "🥦" },
+        { name: "Spinach", category: "Vegetable", emoji: "🥬" },
+        { name: "Lettuce", category: "Vegetable", emoji: "🥬" },
+        { name: "Cabbage", category: "Vegetable", emoji: "🥬" },
+        { name: "Bell Peppers", category: "Vegetable", emoji: "🫑" },
+        { name: "Mushrooms", category: "Vegetable", emoji: "🍄" },
+        { name: "Zucchini", category: "Vegetable", emoji: "🥒" },
+        { name: "Cucumber", category: "Vegetable", emoji: "🥒" },
+        { name: "Corn", category: "Vegetable", emoji: "🌽" },
+        { name: "Peas", category: "Vegetable", emoji: "🫛" },
+        { name: "Green Beans", category: "Vegetable", emoji: "🫛" },
+        { name: "Celery", category: "Vegetable", emoji: "🥬" },
+        { name: "Asparagus", category: "Vegetable", emoji: "🥬" },
+        { name: "Eggplant", category: "Vegetable", emoji: "🍆" },
+        { name: "Cauliflower", category: "Vegetable", emoji: "🥬" },
+        { name: "Kale", category: "Vegetable", emoji: "🥬" },
+
+        // Fruits
+        { name: "Apples", category: "Fruit", emoji: "🍎" },
+        { name: "Bananas", category: "Fruit", emoji: "🍌" },
+        { name: "Lemons", category: "Fruit", emoji: "🍋" },
+        { name: "Limes", category: "Fruit", emoji: "🍋" },
+        { name: "Oranges", category: "Fruit", emoji: "🍊" },
+        { name: "Strawberries", category: "Fruit", emoji: "🍓" },
+        { name: "Blueberries", category: "Fruit", emoji: "🫐" },
+        { name: "Avocado", category: "Fruit", emoji: "🥑" },
+        { name: "Mango", category: "Fruit", emoji: "🥭" },
+        { name: "Pineapple", category: "Fruit", emoji: "🍍" },
+        { name: "Grapes", category: "Fruit", emoji: "🍇" },
+        { name: "Peaches", category: "Fruit", emoji: "🍑" },
+
+        // Dairy
+        { name: "Milk", category: "Dairy", emoji: "🥛" },
+        { name: "Cheese", category: "Dairy", emoji: "🧀" },
+        { name: "Cheddar Cheese", category: "Dairy", emoji: "🧀" },
+        { name: "Mozzarella", category: "Dairy", emoji: "🧀" },
+        { name: "Parmesan", category: "Dairy", emoji: "🧀" },
+        { name: "Cream Cheese", category: "Dairy", emoji: "🧀" },
+        { name: "Butter", category: "Dairy", emoji: "🧈" },
+        { name: "Heavy Cream", category: "Dairy", emoji: "🥛" },
+        { name: "Sour Cream", category: "Dairy", emoji: "🥛" },
+        { name: "Yogurt", category: "Dairy", emoji: "🥛" },
+        { name: "Greek Yogurt", category: "Dairy", emoji: "🥛" },
+
+        // Grains & Starches
+        { name: "Rice", category: "Grain", emoji: "🍚" },
+        { name: "Brown Rice", category: "Grain", emoji: "🍚" },
+        { name: "Pasta", category: "Grain", emoji: "🍝" },
+        { name: "Spaghetti", category: "Grain", emoji: "🍝" },
+        { name: "Penne", category: "Grain", emoji: "🍝" },
+        { name: "Bread", category: "Grain", emoji: "🍞" },
+        { name: "Flour", category: "Grain", emoji: "🌾" },
+        { name: "Oats", category: "Grain", emoji: "🌾" },
+        { name: "Quinoa", category: "Grain", emoji: "🌾" },
+        { name: "Noodles", category: "Grain", emoji: "🍜" },
+        { name: "Tortillas", category: "Grain", emoji: "🫓" },
+        { name: "Breadcrumbs", category: "Grain", emoji: "🍞" },
+
+        // Pantry Items
+        { name: "Olive Oil", category: "Pantry", emoji: "🫒" },
+        { name: "Vegetable Oil", category: "Pantry", emoji: "🫒" },
+        { name: "Soy Sauce", category: "Pantry", emoji: "🥫" },
+        { name: "Vinegar", category: "Pantry", emoji: "🫙" },
+        { name: "Honey", category: "Pantry", emoji: "🍯" },
+        { name: "Sugar", category: "Pantry", emoji: "🧂" },
+        { name: "Salt", category: "Pantry", emoji: "🧂" },
+        { name: "Black Pepper", category: "Pantry", emoji: "🧂" },
+        { name: "Chicken Broth", category: "Pantry", emoji: "🥫" },
+        { name: "Beef Broth", category: "Pantry", emoji: "🥫" },
+        { name: "Vegetable Broth", category: "Pantry", emoji: "🥫" },
+        { name: "Canned Tomatoes", category: "Pantry", emoji: "🥫" },
+        { name: "Coconut Milk", category: "Pantry", emoji: "🥥" },
+        { name: "Beans", category: "Pantry", emoji: "🫘" },
+        { name: "Black Beans", category: "Pantry", emoji: "🫘" },
+        { name: "Chickpeas", category: "Pantry", emoji: "🫘" },
+        { name: "Lentils", category: "Pantry", emoji: "🫘" },
+
+        // Herbs & Spices
+        { name: "Basil", category: "Herb", emoji: "🌿" },
+        { name: "Oregano", category: "Herb", emoji: "🌿" },
+        { name: "Thyme", category: "Herb", emoji: "🌿" },
+        { name: "Rosemary", category: "Herb", emoji: "🌿" },
+        { name: "Parsley", category: "Herb", emoji: "🌿" },
+        { name: "Cilantro", category: "Herb", emoji: "🌿" },
+        { name: "Mint", category: "Herb", emoji: "🌿" },
+        { name: "Ginger", category: "Spice", emoji: "🫚" },
+        { name: "Cumin", category: "Spice", emoji: "🌶️" },
+        { name: "Paprika", category: "Spice", emoji: "🌶️" },
+        { name: "Chili Powder", category: "Spice", emoji: "🌶️" },
+        { name: "Cinnamon", category: "Spice", emoji: "🌰" },
+        { name: "Curry Powder", category: "Spice", emoji: "🍛" },
+        { name: "Italian Seasoning", category: "Spice", emoji: "🌿" },
+    ];
+
+    // Tool database
+    const toolDatabase = [
+        { name: "Oven", emoji: "🔥" },
+        { name: "Stovetop", emoji: "♨️" },
+        { name: "Microwave", emoji: "📡" },
+        { name: "Blender", emoji: "🫗" },
+        { name: "Food Processor", emoji: "🔄" },
+        { name: "Air Fryer", emoji: "🌀" },
+        { name: "Instant Pot", emoji: "🍲" },
+        { name: "Slow Cooker", emoji: "🍲" },
+        { name: "Grill", emoji: "🍖" },
+        { name: "Wok", emoji: "🥘" },
+        { name: "Cast Iron Skillet", emoji: "🍳" },
+        { name: "Baking Sheet", emoji: "📋" },
+        { name: "Dutch Oven", emoji: "🥘" },
+        { name: "Stand Mixer", emoji: "🔄" },
+        { name: "Hand Mixer", emoji: "🔄" },
+        { name: "Toaster", emoji: "🍞" },
+        { name: "Rice Cooker", emoji: "🍚" },
+        { name: "Pressure Cooker", emoji: "🍲" },
+        { name: "Steamer", emoji: "💨" },
+        { name: "Deep Fryer", emoji: "🍟" },
+    ];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+        setupAutocomplete('ingredient-input', 'ingredient-autocomplete', ingredientDatabase, addIngredient);
+        setupAutocomplete('tool-input', 'tool-autocomplete', toolDatabase, addTool);
+        setupAutocomplete('exclude-input', 'exclude-autocomplete', ingredientDatabase, addExclude);
+
+        // Form submission
+        document.getElementById('kitchen-form').addEventListener('submit', function (e) {
+            document.getElementById('ingredients-hidden').value = ingredients.join(', ');
+            document.getElementById('tools-hidden').value = tools.join(', ');
+            document.getElementById('exclude-hidden').value = excludeList.join(', ');
+        });
+    });
+
+    function setupAutocomplete(inputId, dropdownId, database, addFunction) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+
+        input.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            selectedIndex = -1;
+
+            if (query.length < 1) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            // Filter and score results
+            const results = database
+                .filter(item => item.name.toLowerCase().includes(query))
+                .sort((a, b) => {
+                    // Prioritize items that start with the query
+                    const aStarts = a.name.toLowerCase().startsWith(query);
+                    const bStarts = b.name.toLowerCase().startsWith(query);
+                    if (aStarts && !bStarts) return -1;
+                    if (!aStarts && bStarts) return 1;
+                    return a.name.localeCompare(b.name);
+                })
+                .slice(0, 8);
+
+            if (results.length === 0) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            dropdown.innerHTML = results.map((item, index) => {
+                const highlighted = highlightMatch(item.name, query);
+                const category = item.category ? `<span class="category">${item.category}</span>` : '';
+                return `
+                <div class="autocomplete-item" data-index="${index}" data-name="${item.name}">
+                    <span>${item.emoji || '📦'}</span>
+                    <span>${highlighted}</span>
+                    ${category}
+                </div>
+            `;
+            }).join('');
+
+            dropdown.classList.add('show');
+
+            // Add click handlers
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    input.value = this.dataset.name;
+                    dropdown.classList.remove('show');
+                    addFunction();
+                });
+            });
+        });
+
+        // Keyboard navigation
+        input.addEventListener('keydown', function (e) {
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                updateSelection(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, -1);
+                updateSelection(items);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0 && items[selectedIndex]) {
+                    input.value = items[selectedIndex].dataset.name;
+                    dropdown.classList.remove('show');
+                }
+                addFunction();
+            } else if (e.key === 'Escape') {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Close on click outside
+        document.addEventListener('click', function (e) {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
     }
-  }
 
-  function quickAdd(ingredient) {
-    if (!ingredients.includes(ingredient)) {
-      ingredients.push(ingredient);
-      renderIngredients();
+    function highlightMatch(text, query) {
+        const index = text.toLowerCase().indexOf(query);
+        if (index === -1) return text;
+        return text.slice(0, index) +
+            '<span class="highlight">' + text.slice(index, index + query.length) + '</span>' +
+            text.slice(index + query.length);
     }
-  }
 
-  function removeIngredient(ingredient) {
-    ingredients = ingredients.filter(i => i !== ingredient);
-    renderIngredients();
-  }
+    function updateSelection(items) {
+        items.forEach((item, index) => {
+            item.classList.toggle('selected', index === selectedIndex);
+        });
+    }
 
-  function renderIngredients() {
-    const container = document.getElementById('ingredients-container');
-    const findBtn = document.getElementById('find-recipes-btn');
+    // Add functions
+    function addIngredient() {
+        const input = document.getElementById('ingredient-input');
+        const value = input.value.trim();
+        if (value && !ingredients.includes(value)) {
+            ingredients.push(value);
+            input.value = '';
+            renderIngredients();
+        }
+        document.getElementById('ingredient-autocomplete').classList.remove('show');
+    }
 
-    if (ingredients.length === 0) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state-icon">🍽️</div>
-          <p>No ingredients added yet</p>
-          <p style="font-size: 0.9rem; margin-top: 0.5rem;">Start adding ingredients to find recipes!</p>
-        </div>
-      `;
-      findBtn.disabled = true;
-    } else {
-      container.innerHTML = `
-        <div class="ingredients-grid">
-          ${ingredients.map(ing => `
-            <div class="ingredient-tag">
-              <span class="ingredient-name">${ing}</span>
-              <button class="remove-btn" onclick="removeIngredient('${ing}')">×</button>
+    function addTool() {
+        const input = document.getElementById('tool-input');
+        const value = input.value.trim();
+        if (value && !tools.includes(value)) {
+            tools.push(value);
+            input.value = '';
+            renderTools();
+        }
+        document.getElementById('tool-autocomplete').classList.remove('show');
+    }
+
+    function addExclude() {
+        const input = document.getElementById('exclude-input');
+        const value = input.value.trim();
+        if (value && !excludeList.includes(value)) {
+            excludeList.push(value);
+            input.value = '';
+            renderExclude();
+        }
+        document.getElementById('exclude-autocomplete').classList.remove('show');
+    }
+
+    // Quick add functions
+    function quickAddIngredient(item) {
+        if (!ingredients.includes(item)) {
+            ingredients.push(item);
+            renderIngredients();
+        }
+    }
+
+    function quickAddTool(item) {
+        if (!tools.includes(item)) {
+            tools.push(item);
+            renderTools();
+        }
+    }
+
+    function quickAddExclude(item) {
+        if (!excludeList.includes(item)) {
+            excludeList.push(item);
+            renderExclude();
+        }
+    }
+
+    // Remove functions
+    function removeIngredient(item) {
+        ingredients = ingredients.filter(i => i !== item);
+        renderIngredients();
+    }
+
+    function removeTool(item) {
+        tools = tools.filter(t => t !== item);
+        renderTools();
+    }
+
+    function removeExclude(item) {
+        excludeList = excludeList.filter(e => e !== item);
+        renderExclude();
+    }
+
+    // Render functions
+    function renderIngredients() {
+        const container = document.getElementById('ingredients-container');
+        if (ingredients.length === 0) {
+            container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🍽️</div>
+                <p>No ingredients added yet</p>
             </div>
-          `).join('')}
-        </div>
-      `;
-      findBtn.disabled = false;
+        `;
+        } else {
+            container.innerHTML = `
+            <div class="tags-grid">
+                ${ingredients.map(ing => `
+                    <div class="tag ingredient">
+                        <span>${ing}</span>
+                        <button class="remove-btn" onclick="removeIngredient('${ing.replace(/'/g, "\\'")}')">×</button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        }
+        updateSummary();
     }
-  }
 
-  function findRecipes() {
-    document.getElementById("ingredients-hidden").value = ingredients.join(", ");
-    document.getElementById("ingredients-form").submit();
-  }
+    function renderTools() {
+        const container = document.getElementById('tools-container');
+        if (tools.length === 0) {
+            container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔧</div>
+                <p>No tools specified (we'll suggest any recipe)</p>
+            </div>
+        `;
+        } else {
+            container.innerHTML = `
+            <div class="tags-grid">
+                ${tools.map(tool => `
+                    <div class="tag tool">
+                        <span>${tool}</span>
+                        <button class="remove-btn" onclick="removeTool('${tool.replace(/'/g, "\\'")}')">×</button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        }
+        updateSummary();
+    }
 
+    function renderExclude() {
+        const container = document.getElementById('exclude-container');
+        if (excludeList.length === 0) {
+            container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">✓</div>
+                <p>No restrictions - all ingredients welcome!</p>
+            </div>
+        `;
+        } else {
+            container.innerHTML = `
+            <div class="tags-grid">
+                ${excludeList.map(item => `
+                    <div class="tag exclude">
+                        <span>${item}</span>
+                        <button class="remove-btn" onclick="removeExclude('${item.replace(/'/g, "\\'")}')">×</button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        }
+        updateSummary();
+    }
+
+    function updateSummary() {
+        document.getElementById('ingredient-count').textContent = ingredients.length;
+        document.getElementById('tool-count').textContent = tools.length;
+        document.getElementById('exclude-count').textContent = excludeList.length;
+        document.getElementById('find-recipes-btn').disabled = ingredients.length === 0;
+    }
 </script>
 {% endblock %}
