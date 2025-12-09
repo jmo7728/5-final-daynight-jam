@@ -13,4 +13,4 @@ COPY . .
 EXPOSE 8000
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "app:create_app()"]
+CMD ["gunicorn", "--bind", "0.0.0.0:${PORT}", "--workers", "4", "app:create_app()"]
