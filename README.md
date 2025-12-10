@@ -1,7 +1,8 @@
 # Final Project
 
 [![Web App CI](https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/web.yml/badge.svg)](
-https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/web.yml)[![Docker CI](https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/docker-cicd.yml/badge.svg)](
+https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/web.yml)[![mongodb CI](https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/mongodb-ci.yml/badge.svg)](
+https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/mongodb-ci.yml)[![Docker CI](https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/docker-cicd.yml/badge.svg)](
 https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/docker-cicd.yml)
 
 [Live Deployment on Digital Ocean](https://daynight-jam-f8voz.ondigitalocean.app/)
