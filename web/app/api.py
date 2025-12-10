@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify, session, current_app
-from .ml_client import get_recommendation, replace_ingredient
+from ml_subsystem import get_recommendation, replace_ingredient
 from .db import insert_recipe, find_recipe_by_id
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")

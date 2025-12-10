@@ -1,7 +1,7 @@
 # app/pages.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_login import login_required
-from .ml_client import get_recommendation
+from ml_subsystem import get_recommendation
 
 pages_bp = Blueprint("pages", __name__)
 

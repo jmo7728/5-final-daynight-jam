@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function createChip(text, parent) {
         const chip = document.createElement("span");
         chip.className = "chip";
-        chip.textContent = text + " ¡Á";
+        chip.textContent = text + " ï¿½ï¿½";
         chip.onclick = () => chip.remove();
         parent.appendChild(chip);
     }
@@ -36,12 +36,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const submitBtn = document.getElementById("submit-btn");
     if (submitBtn) {
         submitBtn.onclick = async () => {
-            const include = Array.from(includeList.children).map(c => c.textContent.replace(" ¡Á", ""));
-            const exclude = Array.from(excludeList.children).map(c => c.textContent.replace(" ¡Á", ""));
+            const include = Array.from(includeList.children).map(c => c.textContent.replace(" ï¿½ï¿½", ""));
+            const exclude = Array.from(excludeList.children).map(c => c.textContent.replace(" ï¿½ï¿½", ""));
 
             const payload = {
                 include,
                 exclude,
+                dont_have,
+                tools_have,
                 cuisine: document.getElementById("cuisine").value,
                 taste: document.getElementById("taste").value,
                 diet: document.getElementById("diet").value
