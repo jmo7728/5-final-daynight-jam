@@ -38,9 +38,9 @@ Automatically build and manage a shopping list based on selected recipes:
 
 ## Class Members
 Haonan Cai [Dexter](https://github.com/TogawaSaki0214)
-your name [Daniel-H](https://github.com/DANIELX-X)
-your name [lastteatime](https://github.com/ll5373128)
-your name [John](https://github.com/jmo7728)
+YI-KAI HUANG [Daniel-H](https://github.com/DANIELX-X)
+Leon Lian [lastteatime](https://github.com/ll5373128)
+John Ovalles [John](https://github.com/jmo7728)
 
 ## Setup and Installation
 
