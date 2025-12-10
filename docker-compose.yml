@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb
+    environment:
+      - PORT=8000
+      - MONGO_URI=mongodb://mongodb:27017/mydb
+    ports:
+      - "8000:8000"
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
