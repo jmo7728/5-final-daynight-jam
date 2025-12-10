@@ -17,7 +17,7 @@ from flask_login import (
 )
 from bson import ObjectId
 
-from .db import users_collection  # ← this now definitely exists
+from mongodb_subsystem import users_collection
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 

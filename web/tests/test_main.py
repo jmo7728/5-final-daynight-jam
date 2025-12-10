@@ -1,4 +1,4 @@
-from app.db import insert_recipe
+from mongodb_subsystem.db import insert_recipe
 
 def test_index(client):
     response = client.get("/")

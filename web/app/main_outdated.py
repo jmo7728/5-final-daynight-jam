@@ -42,7 +42,7 @@ def result_page():
         try:
             # If you later implement find_recipe_by_id in db.py,
             # this will start working without changing this route.
-            from .db import find_recipe_by_id
+            from ...mongodb_subsystem.db import find_recipe_by_id
             recipe = find_recipe_by_id(recipe_id)
         except ImportError:
             # DB helpers not implemented yet

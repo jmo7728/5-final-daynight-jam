@@ -1,6 +1,6 @@
 import requests
 from flask import Blueprint, request, jsonify
-from .db import get_db
+from ...mongodb_subsystem.db import get_db
 
 recipes_bp = Blueprint("recipes", __name__, url_prefix="/recipes")
 

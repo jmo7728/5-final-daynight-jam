@@ -1,6 +1,6 @@
 import pytest
 from app import create_app
-import app.db as db_mod
+import mongodb_subsystem.db as db_mod
 from unittest.mock import patch
 
 @pytest.fixture()
