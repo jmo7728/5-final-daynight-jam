@@ -30,7 +30,7 @@ jobs:
 
       - name: Start MongoDB container
         run: |
-          docker-compose -f mongodb_subsystem/docker-compose.yml up -d
+          docker compose -f mongodb_subsystem/docker-compose.yml up -d
           docker ps
 
       - name: Run tests
@@ -38,6 +38,6 @@ jobs:
           pytest mongodb_subsystem/tests --maxfail=1 --disable-warnings -q
 
       - name: Stop MongoDB container
-        run: docker-compose -f mongodb_subsystem/docker-compose.yml down
+        run: docker compose -f mongodb_subsystem/docker-compose.yml down
 
 
