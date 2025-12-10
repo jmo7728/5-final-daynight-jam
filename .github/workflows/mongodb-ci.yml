@@ -20,9 +20,9 @@ jobs:
 
       - name: Start MongoDB container
         run: |
-          docker compose -f mongodb_subsystem/docker-compose.yml up -d
+          docker compose -f docker-compose.yml up -d
           docker ps
 
       - name: Stop MongoDB container
-        run: docker compose -f mongodb_subsystem/docker-compose.yml down
+        run: docker compose -f docker-compose.yml down
 
