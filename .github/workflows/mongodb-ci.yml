@@ -1,0 +1,27 @@
+name: MongoDB CI
+
+on:
+  push:
+    paths:
+      - 'mongodb_subsystem/**'
+  pull_request:
+    paths:
+      - 'mongodb_subsystem/**'
+
+jobs:
+  test-mongodb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Start MongoDB container
+        run: |
+          docker-compose -f mongodb_subsystem/docker-compose.yml up -d
+          docker ps
+
+      - name: Stop MongoDB container
+        run: docker-compose -f mongodb_subsystem/docker-compose.yml down
