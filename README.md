@@ -4,6 +4,10 @@
 https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/web.yml
 )
 
+[![Docker CI](https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/docker-cicd.yml/badge.svg)](
+https://github.com/swe-students-fall2025/5-final-daynight-jam/actions/workflows/docker-cicd.yml
+)
+
 ## Introduction
 
 ## Features
